@@ -4,14 +4,10 @@
 Sarah Bernardo
 """
 
-import pandas as pd
 import seaborn as sns
 from matplotlib import pyplot as plt
 import plotly.express as px
-import plotly.graph_objects as go
 import pandas as pd
-import numpy as np
-import math
 
 infile = 'apr_25_chtmt.csv'
 
@@ -27,8 +23,13 @@ def clean_data(infile):
     return df
 
 def pron_df(df):
+    # initialize row of 1s to count number of pronouns
     df["Counter"] = 1
+
+    # new df of only desired cols
     pron_df = df[["Pronouns", "Solo/Group", "Counter"]].copy()
+
+    # group by pronouns and solo/group status to account for groups registered as they/them pronouns
     pron_df = pron_df.groupby(['Pronouns', 'Solo/Group'])["Counter"].sum().reset_index()
     pron_df = pron_df.drop([0])
 
@@ -69,7 +70,8 @@ def measure_genres(df):
             elif each in genre_dct:
                 genre_dct[each] += 1
 
-    sorted_values = sorted(genre_dct.values(), reverse=True)  # Sort the values
+    # sort the values
+    sorted_values = sorted(genre_dct.values(), reverse=True)
     sorted_dict = {}
 
     for i in sorted_values:
@@ -117,21 +119,21 @@ def stage_trend_df(df):
 
     df["Counter"] = 1
     print(list(df.columns))
-    slaydf = df[['Career Stage', 'Career Trend', 'Counter']].copy()
+    stgdf = df[['Career Stage', 'Career Trend', 'Counter']].copy()
 
-    slay = slaydf.replace('Developing', "A")
-    slay = slay.replace('Mid-Level', "B")
-    slay = slay.replace('Mainstream', "C")
-    slay = slay.replace('Superstar', "D")
-    slay = slay.replace('Legendary', "E")
+    stg = stgdf.replace('Developing', "A")
+    stg = stg.replace('Mid-Level', "B")
+    stg = stg.replace('Mainstream', "C")
+    stg = stg.replace('Superstar', "D")
+    stg = stg.replace('Legendary', "E")
 
-    slay = slay.replace('Decline', "F")
-    slay = slay.replace('Steady', "G")
-    slay = slay.replace('Growth', "H")
-    slay = slay.replace('High Growth', "I")
-    slay = slay.replace('Explosive Growth', "J")
+    stg = stg.replace('Decline', "F")
+    stg = stg.replace('Steady', "G")
+    stg = stg.replace('Growth', "H")
+    stg = stg.replace('High Growth', "I")
+    stg = stg.replace('Explosive Growth', "J")
 
-    grouped = slay.groupby(['Career Stage', 'Career Trend'])["Counter"].sum().reset_index()
+    grouped = stg.groupby(['Career Stage', 'Career Trend'])["Counter"].sum().reset_index()
 
     dfg = grouped.replace("A", 'Developing')
     dfg = dfg.replace("B", 'Mid-Level')
@@ -145,7 +147,6 @@ def stage_trend_df(df):
     dfg = dfg.replace("I", 'High Growth')
     dfg = dfg.replace("J", 'Explosive Growth')
 
-    #print(dfg)
     return dfg
 
 def stage_trend_graph(df):
